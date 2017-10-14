@@ -1,37 +1,37 @@
-# ![Assessment 3][banner]
+# Traveling around the Netherlands
 
-This repository can be forked for [**assessment 3**][a2] of [frontend 3][fe3]
-at [**@CMDA**][cmda].
+In this assessment I used a dirty dataset, cleaned it and got multiple charts fully functioning. One chart is based [`bl.ock`](link) by
+[**@someonw**](https://github.com/) (GPL-3.0).
 
-## TODO
+![Preview image](preview.png)
+> My work
+> [**Velomovies**](https://velomovies.github.io/fe3-assessment-3/).
 
-*   [ ] [GitHub Pages](#github-pages)
-*   [ ] [Metadata](#metadata)
-*   [ ] [Issues](#issues)
-*   [ ] Replace this document in your fork with your own readme!
+## Background
 
-## GitHub Pages
+Info
 
-Set up [GitHub Pages][pages] for this fork through the **Settings** pane.  Use
-the **Master branch** as its source.  Do not choose a Jekyll template.
+## Data
 
-## Metadata
+[`Dataset`](link). 
 
-Edit the **description** and **url** of your repository.  Click on edit above
-the green Clone or download button and fill in a correct description and use the
-`github.io` URL you just set up.
+* `data` — Information
+* `data` — Information
+* `data` — Information
 
-## Issues
+## Features
+*   [`d3-format`](https://github.com/d3/d3-format#api-reference)
+    — `d3.format([number])`
+*   [`d3-array`](https://github.com/d3/d3-array)
+    — `max/min`
+    — `d3.push` 
+*   [`d3-selection`](https://github.com/d3/d3-selection#d3-selection)
+    — `d3.select`
+    — `on` mouse events
+*   [`d3-request`](https://github.com/d3/d3-request#api-reference)
+    — `d3.tsv`
+    — Loading files
 
-Enable issues so we can give feedback by going to the settings tab of your fork
-and checking the box next to `issues`.
+## License
 
-[banner]: https://cdn.rawgit.com/cmda-fe3/logo/a4b0614/banner-assessment-3.svg
-
-[a2]: https://github.com/cmda-fe3/course-17-18/tree/master/assessment-3#description
-
-[fe3]: https://github.com/cmda-fe3
-
-[cmda]: https://github.com/cmda
-
-[pages]: https://pages.github.com
+GPL-3.0 © Victor Zumpolle
