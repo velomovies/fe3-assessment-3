@@ -1,4 +1,4 @@
-//This code is based on link by someone. I created my own version of it and added some code.
+//This code is based on http://bl.ocks.org/phil-pedruco/9344373 by Phil Pedruco. I created my own version of it and added some code.
 
 var width = 650,
   height = 450,
