@@ -3,7 +3,7 @@
 In this assessment I used a dirty dataset, cleaned it and got multiple charts fully functioning. One chart is based [`bl.ock`](This code is based on http://bl.ocks.org/phil-pedruco/9344373 by Phil Pedruco.) by
 [**@Phil Pedruco**](https://github.com/phil-pedruco) (GPL-3.0).
 
-![Preview image](preview.png)
+![Preview image](preview.PNG)
 > My work
 > [**Velomovies**](https://velomovies.github.io/fe3-assessment-3/).
 
