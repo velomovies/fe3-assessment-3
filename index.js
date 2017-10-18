@@ -1,7 +1,8 @@
 //This code is based on link by someone. I created my own version of it and added some code.
 
 var width = 960,
-  height = 550
+  height = 450,
+  widthBar = 500
 
 var x = d3.scaleLinear()
     .domain([1, 10])
@@ -24,6 +25,10 @@ var path = d3.geoPath()
 var svg = d3.select("body").append("svg")
   .attr("width", width)
   .attr("height", height)
+
+var svg2 = d3.select("body").append("svg")
+.attr("width", widthBar)
+.attr("height", height)
 
 d3.text("index.csv")
   .get(onload)
@@ -68,7 +73,6 @@ function onload(err, doc) {
       return d.transport
     })
     .entries(data)
-    console.log(loc)
 
   d3.json("nld.json", function(error, nld) {
 
@@ -83,7 +87,7 @@ function onload(err, doc) {
 
       locations = nld.objects.subunits.geometries
 
-      svg.append("g").selectAll("rect")
+      svg.append("g").attr("transform", "translate(-100, 0)").selectAll("rect")
         .data(colour.range().map(function(d) {
             d = colour.invertExtent(d)
             if (d[0] == null) d[0] = x.domain()[0]
@@ -93,12 +97,15 @@ function onload(err, doc) {
         .enter().append("rect")
           .attr("height", 10)
           .attr("x", function(d) { return x(d[0]) })
+          .attr("transform", "translate(0, -10)")
           .transition()
           .delay(function(d,i) { return i * 10 })
           .duration(500)
           .attr("width", function(d) { if(x(d[1]) - x(d[0]) > 0) {
             return x(d[1]) - x(d[0]) } })
           .style("fill", function(d) { return colour(d[0]) })
+          .attr("transform", "translate(0, 0)")
+
 
           svg.select("g").call(d3.axisBottom(x)
               .tickSize(11)
@@ -114,13 +121,14 @@ function onload(err, doc) {
         return d.properties.name
       })
       .append("path")
-      .attr("fill", "#fff")
+      .style("opacity", "0")
 
     svg.selectAll("path")
       .transition()
-      .duration(1000)
+      .delay(function(d,i) { return i * 50})
+      .duration(200)
       .attr("d", path)
-      .style("stroke", "#fff")
+      .style("stroke", "#000")
       .style("stroke-width", ".5")
       .style("opacity", "1")
       .style("fill", function(d, i) {
@@ -132,7 +140,6 @@ function onload(err, doc) {
         for (var k = 0; k < loc.length; k++) {
           if (loc[k].key == locationCheck()) {
             var color = loc[k].values[0].y2010
-            console.log(color, colour(color))
             return colour(color)
           }
         }
@@ -141,13 +148,13 @@ function onload(err, doc) {
     svg.selectAll("path").on("mouseenter", function(d, i) {
       d3.select(this)
         .transition()
-        .style("stroke", "#000")
+        .style("stroke", "#fff")
         .style("stroke-width", "1")
-        .style("opacity", ".1")
+        .style("opacity", ".4")
     }).on("mouseout", function(d, i) {
       d3.select(this)
         .transition()
-        .style("stroke", "#fff")
+        .style("stroke", "#000")
         .style("stroke-width", ".5")
         .style("opacity", "1")
     })
@@ -156,7 +163,6 @@ function onload(err, doc) {
 
     for (var j=0; j<trans.length; j++) {
       if(trans[j].key !== "Totaal") {
-        console.log(trans[j].key)
         data.push(trans[j].values[0].y2010)
       }
     }
@@ -165,11 +171,84 @@ function onload(err, doc) {
         .domain([0, d3.max(data)])
         .range([0, 420])
 
-    svg.select("svg").append("g")
-      .attr("class", ".chart").append("div")
-        .data(data)
-      .enter().append("div").transition().delay(function(d, i){ return i * 300 })
-        .style("width", function(d) { return xChart(d) + "px" })
-        .text(function(d, i) { return trans[i+1].key + " " + d + " miljard kilometer" })
+    svg2.attr("class", "chart")
+    .append("text")
+      .text("Heel Nederland")
+      .attr("fill", "#000")
+      .attr("transform", "translate(0, 20)")
+
+    svg2.attr("class", "chart").selectAll("rect")
+        .data(data.sort(sortNumber))
+      .enter().append("rect")
+        .style("width", "0")
+        .style("height", "40px")
+        .attr("transform", function(d, i) { return "translate(0," + ((i + 1) * 41) + ")" })
+      .transition()
+      .delay(function(d, i){ return i * 100 })
+        .style("width", function(d) { return (xChart(d) * 1) + "px" })
+        .style("fill", function(d, i) { return colour(i + 25) })
+
+        svg2.selectAll("rect")
+          .append("title")
+            .text(function(d, i) { return trans[i+1].key + ": " + d + " miljard kilometer" })
+
+        svg2.selectAll("rect").on("mouseenter", function(d, i) {
+          d3.select(this)
+            .transition()
+            .style("opacity", ".4")
+            .style("stroke-width", "1")
+            .style("stroke", "#fff")
+        }).on("mouseout", function(d, i) {
+          d3.select(this)
+            .transition()
+            .style("opacity", "1")
+            .style("stroke-width", ".5")
+            .style("stroke", "#000")
+        })
+
+        svg.selectAll("path").attr("class", "").on("click", updateChart)
+
+        function updateChart(d, i) {
+          data2 = []
+          svg.selectAll("path").attr("class", "")
+          d3.select(this).attr("class", "active")
+            function locationCheck() {
+              if (d.properties) {
+                return d.properties.name + " (PV)"
+              }
+            }
+            loc.forEach(function(dataLoc) {
+              if (dataLoc.key == locationCheck()) {
+                for (var j=0; j<trans.length; j++) {
+                  if(dataLoc.values[j].transport !== "Totaal") {
+                    data2.push(dataLoc.values[j].y2010)
+                  }
+                }
+              }
+            })
+
+            xChart = d3.scaleLinear()
+                .domain([0, d3.max(data)])
+                .range([0, 420])
+
+            svg2.attr("class", "chart")
+            .select("text")
+              .text(d.properties.name)
+              .attr("fill", "#000")
+              .attr("transform", "translate(0, 20)")
+
+            svg2.attr("class", "chart").selectAll("rect")
+            .data(data2.sort(sortNumber)).transition().delay(function(d, i) { return i * 100 }).duration(1000).ease(d3.easeBounceOut)
+            .style("width", function(d) { return ((xChart(d))*4) + "px" })
+
+            svg2.selectAll("rect")
+              .select("title")
+                .text(function(d, i) { console.log(d)
+                  return trans[i+1].key + ": " + d + " miljard kilometer" })
+            }
+
+        function sortNumber(a,b) {
+            return b - a
+        }
   })
 }

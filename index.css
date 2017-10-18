@@ -1,16 +1,27 @@
-body, 9 {
+body, text {
   font-family: 'Questrial', sans-serif;
+  background-color: #000;
 }
 
-path {
+h1 {
+  text-align: center;
+  color: #fff;
+}
+
+path, rect {
   cursor: pointer;
 }
 
-.chart {
-  font: 10px sans-serif;
-  background-color: steelblue;
-  text-align: right;
-  padding: 3px;
-  margin: 1px;
-  color: white;
+text {
+  fill: #fff;
+}
+
+line {
+  stroke: #fff;
+}
+
+.active {
+  opacity: 0.4 !important;
+  stroke: #fff !important;
+  stroke-width: 2 !important;
 }
