@@ -6,6 +6,7 @@ body, text {
 h1 {
   text-align: center;
   color: #fff;
+  cursor: pointer;
 }
 
 path, rect {
