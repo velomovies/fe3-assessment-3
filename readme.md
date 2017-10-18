@@ -81,6 +81,7 @@ if(sel.value == 2010) {
 * Connecting data to the map of the Netherlands
 * Using a different color
 * Adding a "g"
+* Setting up my own legend for the map
 * Making a hover (with `mouseenter` and `mouseout)`
 * Adding a barchart
 * Updating the barchart `on("click")`
