@@ -9,12 +9,22 @@ h1 {
   cursor: pointer;
 }
 
+select {
+  position: absolute;
+  margin-left: 1em;
+  z-index: 999;
+}
+
 path, rect {
   cursor: pointer;
 }
 
 text {
   fill: #fff;
+}
+
+.travelWay {
+    text-anchor: end;
 }
 
 line {
@@ -25,4 +35,8 @@ line {
   opacity: 0.4 !important;
   stroke: #fff !important;
   stroke-width: 2 !important;
+}
+
+svg {
+  position: relative;
 }

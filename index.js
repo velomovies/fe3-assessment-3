@@ -1,8 +1,8 @@
 //This code is based on link by someone. I created my own version of it and added some code.
 
-var width = 960,
+var width = 650,
   height = 450,
-  widthBar = 500
+  widthBar = 800
 
 var x = d3.scaleLinear()
   .domain([1, 10])
@@ -76,6 +76,10 @@ function onload(err, doc) {
 
   d3.json("nld.json", function(error, nld) {
 
+    var sel = document.getElementById("yearSelect");
+    var dropSelect = d3.select("select")
+    dropSelect.on("change", reset)
+
     var netherland = topojson.feature(nld, nld.objects.subunits).features[3],
       pathNetherland = path.bounds(netherland),
       scaleChart = .2 / Math.max((pathNetherland[1][0] - pathNetherland[0][0]) / width, (pathNetherland[1][1] - pathNetherland[0][1]) / height),
@@ -87,7 +91,7 @@ function onload(err, doc) {
 
       locations = nld.objects.subunits.geometries
 
-    svg.append("g").attr("transform", "translate(-100, 0)").selectAll("rect")
+    svg.append("g").attr("transform", "translate(-375, 400)").selectAll("rect")
       .data(colour.range().map(function(d) {
         d = colour.invertExtent(d)
         if (d[0] == null) d[0] = x.domain()[0]
@@ -146,8 +150,8 @@ function onload(err, doc) {
         }
         for (var k = 0; k < loc.length; k++) {
           if (loc[k].key == locationCheck()) {
-            var color = loc[k].values[0].y2010
-            return colour(color)
+              var color = loc[k].values[0].y2010
+              return colour(color)
           }
         }
       })
@@ -170,7 +174,7 @@ function onload(err, doc) {
 
     for (var j = 0; j < trans.length; j++) {
       if (trans[j].key !== "Totaal") {
-        data.push(trans[j].values[0].y2010)
+          data.push(trans[j].values[0].y2010)
       }
     }
 
@@ -180,18 +184,22 @@ function onload(err, doc) {
 
     svg2.attr("class", "chart")
       .append("text")
-      .text("Heel Nederland")
-      .attr("fill", "#000")
-      .attr("transform", "translate(0, 20)")
+        .text("Heel Nederland")
+        .attr("fill", "#000")
+        .attr("transform", "translate(200, 20)")
 
     svg2.attr("class", "chart").selectAll("rect")
       .data(data.sort(sortNumber))
-      .enter().append("rect")
+      .enter()
+      .append("g")
+      .append("rect")
         .style("width", "0")
         .style("height", "40px")
-        .attr("transform", function(d, i) { return "translate(0," + ((i + 1) * 41) + ")" })
+        .attr("transform", function(d, i) { return "translate(200," + ((i + 1) * 41) + ")" })
           .transition()
           .delay(function(d, i) { return i * 100 })
+          .duration(1000)
+          .ease(d3.easeBounceOut)
         .style("width", function(d) { return (xChart(d) * 1) + "px" })
         .style("fill", function(d, i) { return colour(i + 25) })
 
@@ -199,10 +207,17 @@ function onload(err, doc) {
       .append("title")
         .text(function(d, i) { return trans[i + 1].key + ": " + d + " miljard kilometer" })
 
-    svg2.selectAll("rect")
+    svg2.selectAll("g")
       .append("text")
-        .attr("transform", "translate(0, 20)")
-        .text(function(d, i) { return trans[i + 1].key + ": " + d + " miljard kilometer" })
+      .attr("class", "value")
+      .attr("transform", function(d, i) { return "translate(" + (xChart(d) + 203) + "," + (((i + 1) * 41) + 25) + ")" })
+        .text(function(d, i) { return d + " miljard kilometer" })
+
+    svg2.selectAll("g")
+      .append("text")
+      .attr("class", "travelWay")
+      .attr("transform", function(d, i) { return "translate(190," + (((i + 1) * 41) + 25) + ")" })
+        .text(function(d, i) { return trans[i + 1].key })
 
     svg2.selectAll("rect").on("mouseenter", function(d, i) {
       d3.select(this)
@@ -237,21 +252,27 @@ function onload(err, doc) {
         if (dataLoc.key == locationCheck()) {
           for (var j = 0; j < trans.length; j++) {
             if (dataLoc.values[j].transport !== "Totaal") {
-              data2.push(dataLoc.values[j].y2010)
+              if(sel.value == 2010) {
+                data2.push(dataLoc.values[j].y2010)
+              } else if(sel.value == 2011) {
+                data2.push(dataLoc.values[j].y2011)
+              } else if(sel.value == 2012) {
+                data2.push(dataLoc.values[j].y2012)
+              } else if(sel.value == 2013) {
+                data2.push(dataLoc.values[j].y2013)
+              } else if(sel.value == 2014) {
+                data2.push(dataLoc.values[j].y2014)
+              } else if(sel.value == 2015) {
+                data2.push(dataLoc.values[j].y2015)
+              }
             }
           }
         }
       })
 
-      xChart = d3.scaleLinear()
-        .domain([0, d3.max(data)])
-        .range([0, 420])
-
       svg2.attr("class", "chart")
         .select("text")
           .text(d.properties.name)
-          .attr("fill", "#000")
-          .attr("transform", "translate(0, 20)")
 
       svg2.attr("class", "chart").selectAll("rect")
         .data(data2.sort(sortNumber))
@@ -264,26 +285,85 @@ function onload(err, doc) {
       svg2.selectAll("rect")
         .select("title")
         .text(function(d, i) {
-          console.log(d)
           return trans[i + 1].key + ": " + d + " miljard kilometer"
         })
+
+      svg2.selectAll("g")
+      .data(data2.sort(sortNumber))
+        .select(".value")
+          .transition()
+          .duration(1000)
+          .ease(d3.easeBounceOut)
+          .delay(function(d, i) { return i * 100 })
+        .attr("transform", function(d, i) { return "translate(" + (xChart(d) * 4 + 203) + "," + (((i + 1) * 41) + 25) + ")" })
+          .text(function(d, i) { if(d == 0) { return "geen"} else { return d + " miljard kilometer" }})
     }
 
     d3.select("h1").on("click", reset)
 
     function reset() {
+      var data = []
 
-      svg.selectAll("path").attr("class", "")
+      for (var j = 0; j < trans.length; j++) {
+        if (trans[j].key !== "Totaal") {
+          if(sel.value == 2010) {
+            data.push(trans[j].values[0].y2010)
+          } else if(sel.value == 2011) {
+            data.push(trans[j].values[0].y2011)
+          } else if(sel.value == 2012) {
+            data.push(trans[j].values[0].y2012)
+          } else if(sel.value == 2013) {
+            data.push(trans[j].values[0].y2013)
+          } else if(sel.value == 2014) {
+            data.push(trans[j].values[0].y2014)
+          } else if(sel.value == 2015) {
+            data.push(trans[j].values[0].y2015)
+          }
+        }
+      }
+
+      svg.selectAll("path")
+        .attr("class", "")
+          .transition()
+          .delay(function(d, i) { return i * 50 })
+          .duration(200)
+        .style("fill", function(d, i) {
+          function locationCheck() {
+            if (locations[i].properties) {
+              return locations[i].properties.name + " (PV)"
+            }
+          }
+          for (var k = 0; k < loc.length; k++) {
+            if (loc[k].key == locationCheck()) {
+              if(sel.value == 2010) {
+                var color = loc[k].values[0].y2010
+                return colour(color)
+              } else if(sel.value == 2011) {
+                var color = loc[k].values[0].y2011
+                return colour(color)
+              } else if(sel.value == 2012) {
+                var color = loc[k].values[0].y2012
+                return colour(color)
+              } else if(sel.value == 2013) {
+                var color = loc[k].values[0].y2013
+                return colour(color)
+              } else if(sel.value == 2014) {
+                var color = loc[k].values[0].y2014
+                return colour(color)
+              } else if(sel.value == 2015) {
+                var color = loc[k].values[0].y2015
+                return colour(color)
+              }
+            }
+          }
+        })
 
       svg2.attr("class", "chart")
         .select("text")
           .text("Heel Nederland")
-          .attr("fill", "#000")
-          .attr("transform", "translate(0, 20)")
 
       svg2.attr("class", "chart").selectAll("rect")
         .data(data.sort(sortNumber))
-        .attr("transform", function(d, i) { return "translate(0," + ((i + 1) * 41) + ")" })
           .transition()
           .duration(1000)
           .ease(d3.easeBounceOut)
@@ -295,19 +375,15 @@ function onload(err, doc) {
         .select("title")
           .text(function(d, i) { return trans[i + 1].key + ": " + d + " miljard kilometer" })
 
-      svg2.selectAll("rect").on("mouseenter", function(d, i) {
-        d3.select(this)
+      svg2.selectAll("g")
+      .data(data.sort(sortNumber))
+        .select("text")
           .transition()
-          .style("opacity", ".4")
-          .style("stroke-width", "1")
-          .style("stroke", "#fff")
-      }).on("mouseout", function(d, i) {
-        d3.select(this)
-          .transition()
-          .style("opacity", "1")
-          .style("stroke-width", ".5")
-          .style("stroke", "#000")
-      })
+          .duration(1000)
+          .ease(d3.easeBounceOut)
+          .delay(function(d, i) { return i * 100 })
+        .attr("transform", function(d, i) { return "translate(" + (xChart(d) + 203) + "," + (((i + 1) * 41) + 25) + ")" })
+          .text(function(d, i) { return d + " miljard kilometer" })
     }
 
     function sortNumber(a, b) {
