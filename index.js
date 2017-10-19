@@ -2,7 +2,7 @@
 
 var width = 650,
   height = 450,
-  widthBar = 800
+  widthBar = 810
 
 //Setting a scale for showing the correct colors in the map.
 var x = d3.scaleLinear()
